@@ -1,0 +1,38 @@
+{
+  "title": "示例：小步舞",
+  "subtitle": "score_from_json.py 的最小示例",
+  "composer": "DSH",
+  "key": -1,
+  "time": [3, 4],
+  "tempo": 120,
+  "instrument": {"name": "Flute", "program": 74},
+  "sections": [
+    {
+      "name": "Intro",
+      "measures": [
+        {"multi_rest": 1, "marks": ["rehearsal:Intro"], "events": [["R", 3]]},
+        {"events": [["R", 1], ["R", 1], ["F5", 0.5], ["G5", 0.5]]}
+      ]
+    },
+    {
+      "name": "A",
+      "measures": [
+        {"chord": "F", "marks": ["rehearsal:A", "repeat_start", "segno"],
+         "events": [["A5", 0.5], ["F5", 0.5], ["C6", 1.5], ["A5", 0.5]]},
+        {"chord": "C", "events": [["G5", 1], ["C6", 1], ["G5", 1]]},
+        {"chord": "Dm", "events": [["F5", 0.5], ["D5", 0.5], ["A5", 1.5], ["F5", 0.5]]},
+        {"chord": "Bb", "events": [["D5", 1], ["E5", 1], ["F5", 0.5], ["G5", 0.5]],
+         "marks": ["ending1_start", "repeat_end"]}
+      ]
+    },
+    {
+      "name": "B",
+      "measures": [
+        {"chord": "F", "events": [["F5", 3]], "marks": ["ending2_start", "ending2_stop", "ds_al_coda"]},
+        {"chord": "Bb", "events": [["D5", 1], ["E5", 1], ["F5", 0.5], ["G5", 0.5]], "marks": ["coda"]},
+        {"chord": "F", "events": [["F5", 3, "tie_start"]]},
+        {"chord": "F", "events": [["F5", 3, "tie_stop"]], "marks": ["final_bar"]}
+      ]
+    }
+  ]
+}

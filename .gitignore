@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# working dirs produced by the scripts
+pages/
+work/
+out/
+build/
+
+# generated scores (keep the tool, not the outputs)
+*.mscz
+*.musicxml
+*.mid
+*.mp3
+*.pdf
+*.wav
+
+# keep the example preview image
+!examples/*.png
