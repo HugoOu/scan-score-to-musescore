@@ -144,7 +144,7 @@ musescore4 -o out.pdf out.mscz
 
 `SKILL.md` is written as a DSH skill entry. Drop the directory into `~/.dsh/skills/scan-score-to-musescore/` and it triggers on requests like *"transcribe this scan into MuseScore"*.
 
-For the engraving half, install the sibling [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) next to it — `verify.py` and `mxml_ext.py` look for it in `~/.dsh/skills/musescore-score/`. Installing both from the bundle is the one-step route.
+For the engraving half, install the sibling [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) next to it — `verify.py` looks for its `mscore.py` in `~/.dsh/skills/musescore-score/`. Installing both from the bundle is the one-step route.
 
 ### Using it with musescore-score
 
@@ -164,6 +164,17 @@ Three ways to install:
 3. **Plain Python, no DSH.** Run the scripts from the checkout and call `musescore4 -o …` yourself; no skill install needed.
 
 The bundle's README carries the combined workflow diagram and the troubleshooting table; this repo keeps the step-by-step scan walkthrough, the accuracy notes and the public-domain *Ode to Joy* example.
+
+### Keeping the bundled copy in sync
+
+[`dsh-musescore-skills`](https://github.com/HugoOu/dsh-musescore-skills) vendors this toolkit at `skills/scan-score-to-musescore/`, byte for byte. **This repository is the source of truth**: make scan-toolkit changes here, then sync them into a sibling checkout:
+
+```bash
+python tools/sync_scan_skill.py --bundle ../dsh-musescore-skills           # write the vendored copy
+python tools/sync_scan_skill.py --bundle ../dsh-musescore-skills --check   # verify only (CI-friendly)
+```
+
+Only `verify.py` reaches into the other skill (`mscore.py`, for engraving); every other file in the vendored copy is self-contained.
 
 ### Accuracy & limitations
 
@@ -295,7 +306,7 @@ python scripts/verify.py out.musicxml build --pdf --dpi 130
 
 `SKILL.md` 就是 DSH 技能入口。把整个目录放进 `~/.dsh/skills/scan-score-to-musescore/`，之后说「把这张谱转成 MuseScore」「识谱」就会触发。
 
-排版那半段需要配套的 [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills)：`verify.py` 和 `mxml_ext.py` 会去 `~/.dsh/skills/musescore-score/` 找它。两个一起装最省事。
+排版那半段需要配套的 [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills)：`verify.py` 会去 `~/.dsh/skills/musescore-score/` 找它的 `mscore.py`。两个一起装最省事。
 
 ### 和 musescore-score 配合使用
 
@@ -315,6 +326,17 @@ python scripts/verify.py out.musicxml build --pdf --dpi 130
 3. **完全不用 DSH**：脚本就是普通 Python，直接在仓库里跑，最后用 `musescore4 -o …` 自己导出。
 
 合集的 README 有整条流水线图和排错表；本仓库保留逐步识谱教程、精度边界和公有领域的《欢乐颂》示例。
+
+### 保持合集里的副本同步
+
+[`dsh-musescore-skills`](https://github.com/HugoOu/dsh-musescore-skills) 在 `skills/scan-score-to-musescore/` 放了一份逐字节副本。**本仓库是扫描技能的源码真源**：改动请先落在本仓库，再同步到相邻的合集 checkout：
+
+```bash
+python tools/sync_scan_skill.py --bundle ../dsh-musescore-skills           # 写入合集
+python tools/sync_scan_skill.py --bundle ../dsh-musescore-skills --check   # 只校验（可直接用于 CI）
+```
+
+只有 `verify.py` 会用到另一个技能（`mscore.py`，负责排版/导出），合集里其余文件都是自包含的。
 
 ### 精度与边界
 
