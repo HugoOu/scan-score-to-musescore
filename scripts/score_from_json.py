@@ -7,9 +7,9 @@
 
 JSON 结构（最小可用）:
 {
-  "title": "いつも何度でも", "subtitle": "「千と千尋の神隠し」より",
-  "composer": "木村弓", "lyricist": "覚和歌子",
-  "key": -1, "time": [3, 4], "tempo": 135,
+  "title": "示例：小步舞", "subtitle": "score_from_json.py 的最小示例",
+  "composer": "DSH", "lyricist": "",
+  "key": -1, "time": [3, 4], "tempo": 120,
   "instrument": {"name": "Flute", "program": 74},
   "sections": [
     {"name": "Intro", "system_break": true, "measures": [
