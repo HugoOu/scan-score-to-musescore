@@ -34,6 +34,8 @@ No neural network, no training data, no GPU. Just geometry: staff-line fitting, 
 
 > **It is not a general OMR.** It targets monophonic melodies and lead sheets. Dense piano chords, full scores, handwritten music and tablature are out of scope.
 
+> **It pairs with [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills).** This repo stops at MusicXML; the companion skill engraves and exports it, and `verify.py` calls the companion's `mscore.py`. To install both in one checkout, start from the [dsh-musescore-skills bundle](https://github.com/HugoOu/dsh-musescore-skills). [How the two fit together ↓](#using-it-with-musescore-score)
+
 ### What it does
 
 - **Native-resolution extraction** — scanned PDFs are usually a 72–150 dpi bitmap per page. Re-rendering at 300 dpi only produces a bigger blur; the toolkit pulls the embedded image instead.
@@ -92,7 +94,7 @@ The key design choices:
 
 - Python 3.10+, `numpy`, `Pillow`
 - [poppler](https://poppler.freedesktop.org/) — `pdfimages`, `pdftoppm`, `pdfinfo` (TeX Live ships them on Windows)
-- [MuseScore 4](https://musescore.org/) for engraving and export
+- [MuseScore 4](https://musescore.org/) for engraving and export — driven by `verify.py` through the companion `mscore.py`, or your own wrapper via `--mscore`
 
 ```bash
 pip install numpy pillow
@@ -121,7 +123,7 @@ python scripts/score_from_json.py my_score.json out.musicxml
 python scripts/verify.py out.musicxml build --pdf --dpi 130
 ```
 
-`verify.py` expects MuseScore. Point it at your wrapper with `--mscore PATH`, or call MuseScore directly:
+`verify.py` drives MuseScore through the companion skill's `mscore.py` (default `~/.dsh/skills/musescore-score/scripts/mscore.py`). Point it somewhere else with `--mscore PATH`, or call MuseScore directly:
 
 ```bash
 musescore4 -o out.mscz out.musicxml
@@ -141,6 +143,27 @@ musescore4 -o out.pdf out.mscz
 ### As a DeepSeek Harness skill
 
 `SKILL.md` is written as a DSH skill entry. Drop the directory into `~/.dsh/skills/scan-score-to-musescore/` and it triggers on requests like *"transcribe this scan into MuseScore"*.
+
+For the engraving half, install the sibling [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) next to it — `verify.py` and `mxml_ext.py` look for it in `~/.dsh/skills/musescore-score/`. Installing both from the bundle is the one-step route.
+
+### Using it with musescore-score
+
+The two repos are one pipeline, split at MusicXML:
+
+| Stage | Lives in | Scripts |
+|---|---|---|
+| Image → pitch candidates | this repo | `pdf_scan.py`, `pitchmap.py`, `probe.py` |
+| Candidates (hand-checked) → MusicXML | this repo | `score_from_json.py` + `mxml.py` + `mxml_ext.py` |
+| MusicXML → `.mscz` / PDF / PNG / MP3 / MIDI | [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) | `mscore.py` |
+| Engrave, render, eyeball | this repo | `verify.py` (calls `mscore.py`) |
+
+Three ways to install:
+
+1. **Both skills at once (recommended for DSH).** Clone the [dsh-musescore-skills](https://github.com/HugoOu/dsh-musescore-skills) bundle and copy `skills/*` into `~/.dsh/skills/`. That is this toolkit plus the engraver, already wired together.
+2. **This repo alone.** Copy it into `~/.dsh/skills/scan-score-to-musescore/`, then install `musescore-score` separately. Steps 1–4 of the quick start work without it; only the final engrave/render/verify step stops with a clear "install musescore-score" message.
+3. **Plain Python, no DSH.** Run the scripts from the checkout and call `musescore4 -o …` yourself; no skill install needed.
+
+The bundle's README carries the combined workflow diagram and the troubleshooting table; this repo keeps the step-by-step scan walkthrough, the accuracy notes and the public-domain *Ode to Joy* example.
 
 ### Accuracy & limitations
 
@@ -175,6 +198,8 @@ MIT — see [LICENSE](LICENSE). Third-party tools (MuseScore, poppler, NumPy, Pi
 没有神经网络、没有训练数据、不需要 GPU。全是几何：拟合谱线、找符头、坐标换算音高，再用一张「人眼核对清单」补节奏和装饰音。
 
 > **它不是通用 OMR。** 面向单声部旋律和 lead sheet。钢琴密集和弦、总谱、手写谱、六线谱都不在范围内。
+
+> **和 [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) 是一对。** 本仓库只做到 MusicXML，排版/导出交给配套技能，`verify.py` 调用它的 `mscore.py`。想一次装齐两个技能，直接用 [dsh-musescore-skills](https://github.com/HugoOu/dsh-musescore-skills) 合集。[两者怎么配合 ↓](#和-musescore-score-配合使用)
 
 ### 它做什么
 
@@ -234,7 +259,7 @@ MusicXML
 
 - Python 3.10+、`numpy`、`Pillow`
 - [poppler](https://poppler.freedesktop.org/)（`pdfimages` / `pdftoppm` / `pdfinfo`；Windows 上 TeX Live 自带）
-- [MuseScore 4](https://musescore.org/)（排版与导出）
+- [MuseScore 4](https://musescore.org/)（排版与导出；由 `verify.py` 通过配套技能的 `mscore.py` 驱动，也可用 `--mscore` 指向自己的包装脚本）
 
 ```bash
 pip install numpy pillow
@@ -254,6 +279,8 @@ python scripts/score_from_json.py my_score.json out.musicxml
 python scripts/verify.py out.musicxml build --pdf --dpi 130
 ```
 
+`verify.py` 通过配套技能的 `mscore.py` 调用 MuseScore（默认 `~/.dsh/skills/musescore-score/scripts/mscore.py`）；也可用 `--mscore PATH` 指定，或直接调 `musescore4 -o …`。
+
 ### 命令一览
 
 | 脚本 | 作用 | 产出 |
@@ -267,6 +294,27 @@ python scripts/verify.py out.musicxml build --pdf --dpi 130
 ### 作为 DeepSeek Harness 技能
 
 `SKILL.md` 就是 DSH 技能入口。把整个目录放进 `~/.dsh/skills/scan-score-to-musescore/`，之后说「把这张谱转成 MuseScore」「识谱」就会触发。
+
+排版那半段需要配套的 [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills)：`verify.py` 和 `mxml_ext.py` 会去 `~/.dsh/skills/musescore-score/` 找它。两个一起装最省事。
+
+### 和 musescore-score 配合使用
+
+两个仓库是一条流水线，在 MusicXML 处分界：
+
+| 阶段 | 在哪个仓库 | 脚本 |
+|---|---|---|
+| 图片 → 音高候选 | 本仓库 | `pdf_scan.py`、`pitchmap.py`、`probe.py` |
+| 人工核对后的候选 → MusicXML | 本仓库 | `score_from_json.py` + `mxml.py` + `mxml_ext.py` |
+| MusicXML → `.mscz` / PDF / PNG / MP3 / MIDI | [`musescore-score`](https://github.com/HugoOu/dsh-musescore-skills) | `mscore.py` |
+| 排版、出图、核对 | 本仓库 | `verify.py`（调用 `mscore.py`） |
+
+三种装法：
+
+1. **一次装两个（DSH 推荐）**：克隆 [dsh-musescore-skills](https://github.com/HugoOu/dsh-musescore-skills) 合集，把 `skills/*` 拷进 `~/.dsh/skills/`。里面就是这套识谱工具 + 排版引擎，且已经互相接好。
+2. **只装本仓库**：拷到 `~/.dsh/skills/scan-score-to-musescore/`，再单独装 `musescore-score`。前 4 步不装也能跑；只有最后的排版/出图/核对会停下来提示「先装 musescore-score」。
+3. **完全不用 DSH**：脚本就是普通 Python，直接在仓库里跑，最后用 `musescore4 -o …` 自己导出。
+
+合集的 README 有整条流水线图和排错表；本仓库保留逐步识谱教程、精度边界和公有领域的《欢乐颂》示例。
 
 ### 精度与边界
 
