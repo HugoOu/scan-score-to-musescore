@@ -1,0 +1,24 @@
+{
+  "title": "Ode to Joy",
+  "subtitle": "public-domain demo for scan-score-to-musescore",
+  "composer": "L. van Beethoven",
+  "key": 0,
+  "time": [4, 4],
+  "tempo": 100,
+  "instrument": {"name": "Flute", "program": 74},
+  "sections": [
+    {
+      "name": "A",
+      "measures": [
+        {"chord": "C", "events": [["E4", 1], ["E4", 1], ["F4", 1], ["G4", 1]]},
+        {"chord": "G", "events": [["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1]]},
+        {"chord": "C", "events": [["C4", 1], ["C4", 1], ["D4", 1], ["E4", 1]]},
+        {"chord": "G", "events": [["E4", 1.5], ["D4", 0.5], ["D4", 2]]},
+        {"chord": "C", "events": [["E4", 1], ["E4", 1], ["F4", 1], ["G4", 1]]},
+        {"chord": "G", "events": [["G4", 1], ["F4", 1], ["E4", 1], ["D4", 1]]},
+        {"chord": "C", "events": [["C4", 1], ["C4", 1], ["D4", 1], ["E4", 1]]},
+        {"chord": "C", "marks": ["final_bar"], "events": [["D4", 1.5], ["C4", 0.5], ["C4", 2]]}
+      ]
+    }
+  ]
+}

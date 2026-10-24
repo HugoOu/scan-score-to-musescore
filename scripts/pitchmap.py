@@ -138,6 +138,7 @@ def main() -> None:
     ap.add_argument("--pages", default="", help="只处理这些页，如 1,2；默认全部")
     ap.add_argument("--x-min", type=int, default=120)
     ap.add_argument("--x-max", type=int, default=10 ** 6)
+    ap.add_argument("--annotate", default="", help="把检测结果画到页图上，输出到该路径（调试/文档用）")
     args = ap.parse_args()
 
     outdir = Path(args.outdir)
@@ -152,6 +153,7 @@ def main() -> None:
         if want and pg["page"] not in want:
             continue
         img = np.array(Image.open(outdir / pg["image"]).convert("L"))
+        canvas = Image.open(outdir / pg["image"]).convert("RGB") if args.annotate else None
         sys_out = []
         for s in pg["systems"]:
             lines = refine_lines(img, s)
@@ -185,12 +187,29 @@ def main() -> None:
                 "notes": notes,
                 "gaps": gaps,
             })
+            if canvas is not None:
+                from PIL import ImageDraw, ImageFont
+                draw = ImageDraw.Draw(canvas)
+                try:
+                    font = ImageFont.truetype("arialbd.ttf", max(12, int(spacing * 0.9)))
+                except Exception:
+                    font = ImageFont.load_default()
+                r = max(3, int(spacing * 0.45))
+                for i, n in enumerate(notes, 1):
+                    draw.ellipse([n["x"] - r, n["y"] - r, n["x"] + r, n["y"] + r],
+                                 outline=(220, 30, 30), width=max(1, int(spacing * 0.08)))
+                    draw.text((n["x"] + r + 1, n["y"] - r - spacing * 0.6), n["pitch"],
+                              fill=(20, 80, 200), font=font)
             print(f"page {pg['page']} system {s['index']}: {len(notes)} 个候选符头", flush=True)
         result.append({
             "page": pg["page"], "image": pg["image"],
             "clef": args.clef, "key": args.key, "systems": sys_out,
         })
 
+    if args.annotate:
+        Path(args.annotate).parent.mkdir(parents=True, exist_ok=True)
+        canvas.save(args.annotate)
+        print(f"annotated -> {args.annotate}")
     (outdir / "notes.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     print(outdir / "notes.json")
 
