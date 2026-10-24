@@ -1,4 +1,4 @@
-# scan-score-to-musescore
+﻿# scan-score-to-musescore
 
 <p align="center">
   <b>Scanned sheet music → editable MuseScore score. Semi-automatic, hackable, no ML model.</b><br>
@@ -101,7 +101,7 @@ pip install numpy pillow
 ### Quick start
 
 ```bash
-git clone https://github.com/<you>/scan-score-to-musescore.git
+git clone https://github.com/HugoOu/scan-score-to-musescore.git
 cd scan-score-to-musescore
 
 # 1. pages + staff systems (native bitmap for scans)
@@ -243,7 +243,7 @@ pip install numpy pillow
 ### 快速开始
 
 ```bash
-git clone https://github.com/<you>/scan-score-to-musescore.git
+git clone https://github.com/HugoOu/scan-score-to-musescore.git
 cd scan-score-to-musescore
 
 python scripts/pdf_scan.py myscore.pdf work
